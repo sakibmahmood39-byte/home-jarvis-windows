@@ -43,19 +43,25 @@ write it anywhere.
 18. Anything else he wants each morning: news topics, a sports team, markets, a Quran ayah and hadith or a quote, a gym
     plan, a word of the day, something to learn.
 
-## Round 5 — The front page, the paper and Jarvis's voice (5 min)
+## Round 5 — Home, room, car and TV (5 min)
+19a. Walk me through your home from the front door: which rooms, roughly how big? Which one is yours? (for the House tab)
+19b. Your room: about how big, where's the window, where are the bed, desk, printer, TV? A photo helps. (for the Room tab)
+19c. Your car's model and colour? (for the Car tab, a 3D car in your colour)
+19d. Do you have smart lights or plugs through Home Assistant, or a Roku TV? (both optional; skip if not)
+
+## Round 6 — The front page, the paper and Jarvis's voice (5 min)
 19. Show him the sample paper (`paper\sample-edition.json` built to PDF) and the Jarvis app. What should the paper be
     called? ("The <Surname> Times" is the default.)
 20. Page 1 is his day: weather and what to wear, prayer times, to-dos, the day plan, deadlines. What would he move,
     drop or add? Pages 2–3 cover money and messages, then work, faith and him. Which sections can go?
 21. How many to-dos is right: 5 or 8? Does he want blank lines to write on?
 22. Both sides, or one side? Which printer? (Run `scripts\find-printer.ps1` now.)
-23. Jarvis's personality: formal or casual? Short answers or more detail? Wake word "Jarvis" or something else?
+23. Jarvis's personality: formal or casual? Short answers or more detail? Wake word "Jarvis" or something else? Which look: Obsidian (black glass), Arc (navy rings) or Atlas (his house as a 3D stage)?
 24. Who else uses this PC or lives in the house? (So the lock makes sense to him, and their names go in
     `private_words`, the list of words that always lock.)
 
 ## Write it down
-- `me\settings.json`: name, call_me, paper_name, place_label, lat, lon, timezone, units, faith, prayer_method,
+- `me\settings.json` (see `house-room-car.md` for `house`, `room`, `car`): name, call_me, paper_name, place_label, lat, lon, timezone, units, faith, prayer_method,
   asr_school, voice.lang, voice.wake_word, printer, duplex, print_paper, build_time (about 30–45 min before he wants it
   in the tray), private_words (family first names, his workplace, his street, his car plate: words a guest should
   never hear Jarvis say), owner_tools / paper_tools (add his connector tools here only if he connected them).

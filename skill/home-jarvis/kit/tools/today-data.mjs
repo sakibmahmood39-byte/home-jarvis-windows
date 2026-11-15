@@ -47,6 +47,7 @@ export async function todayData(date, s = loadSettings()) {
       const a = await getJson(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${s.lat}&longitude=${s.lon}&method=${s.prayer_method ?? 2}&school=${s.asr_school ?? 0}`);
       const t = a.data.timings;
       out.prayers = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(k => [k, to12(t[k].slice(0, 5))]);
+      out.times24 = Object.fromEntries(['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(k => [k, t[k].slice(0, 5)]));
       const h = a.data.date.hijri;
       out.hijri = `${h.day} ${h.month.en} ${h.year}`;
     } catch (e) { out.prayer_error = e.message; }

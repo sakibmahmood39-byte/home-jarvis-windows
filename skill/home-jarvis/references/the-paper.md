@@ -14,7 +14,7 @@
   Between Prayers" and "Have a blessed day"; "none" shows "Your Day Plan").
 - **Fonts:** UnifrakturMaguntia, Old Standard TT, Playfair Display, Libre Franklin and Amiri, all free (SIL Open Font
   License). npm installs them into `node_modules\@fontsource`.
-- **Printing it:** see `printer-hp.md`. The Paper tab in Jarvis also has Open, Build again and Print it.
+- **Printing it:** see `printer-hp.md`. The **Print** tab in Jarvis shows today's paper, earlier papers, and Print it / Build again.
 
 ## Troubleshooting
 - "playwright-core is missing": run `npm install` in the Jarvis folder.

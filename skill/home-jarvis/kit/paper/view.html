@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="jarvis" content="__TOKEN__"><title>Your paper</title>
+<style>
+:root{--font:"Segoe UI Variable Display","Segoe UI","SF Pro Display",-apple-system,Arial,sans-serif;--mono:"Cascadia Mono",Consolas,ui-monospace,monospace;--a:#37e0ff;--glass:rgba(12,18,26,.62);--line:rgba(255,255,255,.14);--fg:#eef6fb;--muted:#9fb2c0}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#04070b;color:var(--fg);font:500 15px/1.45 var(--font)}
+.wrap{display:grid;grid-template-columns:320px 1fr;gap:12px;height:100%;padding:8px 22px 12px}
+.pc{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.pc h2{margin:0 0 9px;font:800 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--a)}
+.big{font-size:24px;font-weight:800;line-height:1.15}.sub{color:var(--muted);font-size:13px;font-weight:600;margin-top:4px}
+.acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.solid{background:var(--a);color:#02141b;border:0;padding:8px 15px;border-radius:999px;font-size:13px;font-weight:800;cursor:pointer}
+.ghost{background:var(--glass);border:1px solid var(--line);color:var(--fg);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer}
+.ghost.on{border-color:var(--a);box-shadow:0 0 14px -4px var(--a)}
+.rw{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;font-weight:600;cursor:pointer}.rw:last-child{border-bottom:0}.rw small{color:var(--muted)}
+.rw.on span{color:var(--a)}
+.say{margin-top:10px;font-size:13.5px;color:#d7e4ec;min-height:20px}
+.viewer{border-radius:16px;border:1px solid var(--line);overflow:hidden;background:#0b0f14;display:flex;align-items:center;justify-content:center}
+.viewer iframe{width:100%;height:100%;border:0;background:#fff}
+.side{display:flex;flex-direction:column;gap:12px;overflow:auto}
+@media (max-width:820px){.wrap{grid-template-columns:1fr;grid-template-rows:auto 70vh}}
+</style></head><body>
+<div class="wrap">
+  <div class="side">
+    <div class="pc"><h2 id="name">Your morning paper</h2><div class="big" id="state">…</div><div class="sub" id="meta"></div>
+      <div class="acts"><button class="solid" id="print">Print it</button><button class="ghost" id="build">Build again</button><button class="ghost" id="open">Open in a window</button></div>
+      <div class="say" id="say"></div></div>
+    <div class="pc"><h2>Earlier papers</h2><div id="list"></div></div>
+  </div>
+  <div class="viewer" id="viewer"><div class="sub">Loading…</div></div>
+</div>
+<script>
+const T = document.querySelector('meta[name=jarvis]').content, $ = (id) => document.getElementById(id);
+const api = (p, body) => fetch(p, { method: body ? 'POST' : 'GET', headers: { 'x-jarvis': T, 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+let day = '', url = '';
+async function load(d) {
+  const info = await (await api('/api/paper/info' + (d ? `?date=${d}` : ''))).json();
+  if (info.error === 'locked') { $('state').textContent = 'Locked'; $('meta').textContent = 'Your paper is private. Unlock with Windows Hello or your PIN (say "Jarvis, unlock").'; $('viewer').innerHTML = '<div class="sub">Locked</div>'; ['print', 'build', 'open'].forEach((b) => $(b).disabled = true); return; }
+  day = info.date; $('name').textContent = info.name || 'Your morning paper';
+  $('state').textContent = info.ready ? (d ? `The paper of ${day}` : "Today's paper is ready") : 'Not built yet today';
+  $('meta').textContent = `Built at ${info.build_time || '—'} every morning · printing ${info.print_paper ? 'on' : 'off'}${info.printer ? ' · ' + info.printer : ''}`;
+  $('list').innerHTML = ''; for (const x of info.list) { const r = document.createElement('div'); r.className = 'rw' + (x === day ? ' on' : ''); r.innerHTML = `<span>${new Date(x + 'T12:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span><small>${x}</small>`; r.onclick = () => load(x); $('list').append(r); }
+  if (!info.list.length) $('list').innerHTML = '<div class="sub">None yet.</div>';
+  ['print', 'open'].forEach((b) => $(b).disabled = !info.ready);
+  if (url) URL.revokeObjectURL(url); url = '';
+  if (info.ready) { const r = await api(`/api/paper?date=${day}`); url = URL.createObjectURL(await r.blob()); $('viewer').innerHTML = `<iframe title="paper" src="${url}#view=FitH"></iframe>`; }
+  else $('viewer').innerHTML = '<div class="sub">No paper for this day yet. Press "Build again" to make it now.</div>';
+}
+async function act(what) { $('say').textContent = what === 'build' ? 'Building your paper. This takes a minute or two…' : 'Sending it to the printer…'; const r = await (await api(`/api/paper/${what}?date=${day}`, {})).json(); $('say').textContent = r.message || r.error || 'Done.'; if (what === 'build') load(); }
+$('print').onclick = () => act('print'); $('build').onclick = () => act('build'); $('open').onclick = () => url && window.open(url, '_blank');
+load();
+</script>
+</body></html>

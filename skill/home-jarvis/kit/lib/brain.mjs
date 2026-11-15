@@ -7,6 +7,7 @@ import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { LOCKED_SAY, privateAsk, guestPrompt, guestLeaks, maskSecrets } from './lock.mjs';
+import { askLocal, localConf } from './local-ai.mjs';
 
 const kit = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const me = path.join(kit, 'me');
@@ -70,8 +71,8 @@ function guestLog(line) {
   try { fs.mkdirSync(path.join(me, 'logs'), { recursive: true }); fs.appendFileSync(path.join(me, 'logs', 'guest-turns.log'), `${new Date().toISOString()} ${maskSecrets(line).slice(0, 300)}\n`); } catch {}
 }
 
-export function ownerPrompt(s, today) {
-  const profile = readMaybe(path.join(me, 'profile.md'));
+export function ownerPrompt(s, today, facts) {
+  const profile = facts || readMaybe(path.join(me, 'profile.md'));
   return [
     `You are Jarvis, ${s.call_me || s.name || 'the owner'}'s personal assistant on his Windows PC. He unlocked you, so this is him.`,
     'Answer in 1 to 3 short spoken sentences unless he asks for more. Plain words, no lists, no markdown: your answer may be read aloud.',
@@ -85,25 +86,38 @@ export function ownerPrompt(s, today) {
   ].join('\n');
 }
 
-// One turn. Returns { reply, locked } — locked=true means "this needs the owner".
-export async function ask(text, { owner, settings: s = {}, today = {} }) {
-  const words = s.private_words || [];
+// Claude first; Qwen on this PC when Claude can't answer (or first, for short questions, if he chose that).
+async function think({ system, input, settings, claudeOpts, short }) {
+  const lc = localConf(settings), localFirst = lc.enabled && lc.offline_first && short;
+  const tries = localFirst ? ['local', 'claude'] : ['claude', 'local'];
+  let last = { ok: false, text: '', err: '' };
+  for (const t of tries) {
+    if (t === 'local' && !lc.enabled) continue;
+    last = t === 'claude' ? await runClaude({ system, input, ...claudeOpts }) : await askLocal({ system, input, settings });
+    if (last.ok) return { ...last, by: t };
+  }
+  return { ...last, by: '' };
+}
+
+// One turn. Returns { reply, locked, by } — locked=true means "this needs the owner".
+export async function ask(text, { owner, settings: s = {}, today = {}, facts = '' }) {
+  const words = s.private_words || [], short = text.split(/\s+/).length <= 12;
   if (!owner) {
     guestLog(`asked: ${text}`);
     if (privateAsk(text, words)) { guestLog('-> locked (word check)'); return { reply: LOCKED_SAY, locked: true }; }
     const now = new Date().toLocaleString('en-US', { timeZone: s.timezone || undefined, weekday: 'long', hour: 'numeric', minute: '2-digit', month: 'long', day: 'numeric' });
-    const prayers = (today.prayers || []).map(p => p.join(' ')).join(', ');
-    const r = await runClaude({ system: guestPrompt({ now, prayers }), input: text, tools: ['WebSearch'], allowed: ['WebSearch'], timeoutMs: 60000 });
+    const prayers = (today.prayers || []).map((p) => p.join(' ')).join(', ');
+    const r = await think({ system: guestPrompt({ now, prayers }), input: text, settings: s, short, claudeOpts: { tools: ['WebSearch'], allowed: ['WebSearch'], timeoutMs: 60000 } });
     if (!r.ok) return { reply: "Sorry, I couldn't think just now. Try again in a moment.", locked: false, error: r.err };
     if (guestLeaks(r.text, words)) { guestLog('-> locked (reply check)'); return { reply: LOCKED_SAY, locked: true }; }
-    guestLog(`-> answered: ${r.text}`);
-    return { reply: r.text, locked: false };
+    guestLog(`-> answered (${r.by}): ${r.text}`);
+    return { reply: r.text, locked: false, by: r.by };
   }
   remember('Owner', text);
   const tools = s.owner_tools && s.owner_tools.length ? s.owner_tools : ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch'];
-  const r = await runClaude({ system: ownerPrompt(s, today), input: text, cwd: kit, tools: tools.filter(t => !t.includes('(')).concat(['Edit', 'Write']),
-    allowed: [...tools, 'Edit(me/notes/**)', 'Write(me/notes/**)'], strictMcp: !s.owner_use_connectors });
+  const r = await think({ system: ownerPrompt(s, today, facts), input: text, settings: s, short,
+    claudeOpts: { cwd: kit, tools: tools.filter((t) => !t.includes('(')).concat(['Edit', 'Write']), allowed: [...tools, 'Edit(me/notes/**)', 'Write(me/notes/**)'], strictMcp: !s.owner_use_connectors } });
   if (!r.ok) return { reply: "Sorry, I couldn't think just now. " + (r.err ? 'Claude said: ' + r.err.slice(0, 120) : ''), locked: false, error: r.err };
   remember('Jarvis', r.text);
-  return { reply: r.text, locked: false };
+  return { reply: r.text, locked: false, by: r.by };
 }
