@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-16",
+  "date_long": "Monday, November 16, 2026",
+  "hijri": "5 Jumada al-Akhirah 1448",
+  "volume": "Vol. I · No. 1",
+  "weather": { "today": "Cloudy, high 9°C, 3°C tonight; 20% rain", "outlook_short": "Tue 11°, sunny · Wed 7°, showers" },
+  "wear": { "outfit_short": "Warm jacket and a scarf; it drops fast after Maghrib." },
+  "prayers": [["Fajr", "5:32 AM"], ["Sunrise", "6:51 AM"], ["Dhuhr", "11:46 AM"], ["Asr", "2:21 PM"], ["Maghrib", "4:39 PM"], ["Isha", "5:58 PM"]],
+  "lead": {
+    "todos": [
+      { "when": "Morning", "t": "Finish the client proposal and send it.", "tag": "Work · Top 3" },
+      { "when": "Morning", "t": "Call the bank about the new card (not here: on the phone).", "tag": "Money" },
+      { "when": "Afternoon", "t": "Pick up the dry cleaning before 5.", "tag": "Errand" },
+      { "when": "Evening", "t": "Gym: Full Body A, 45 minutes.", "tag": "Health · Top 3" },
+      { "when": "Tonight", "t": "Read 10 pages and plan tomorrow.", "tag": "You · Top 3" }
+    ],
+    "blank_lines": 2,
+    "note": "This is a sample paper. Your real one is written from your own answers every morning."
+  },
+  "plan": [["5:32–6:51 AM", "Fajr + quiet hour", "Quran, then plan the day"], ["9:00–11:46 AM", "Deep work", "The proposal"], ["11:46 AM", "Dhuhr", "Pray, lunch"], ["12:30–2:21 PM", "Calls & admin", "Bank, emails"], ["2:21 PM", "Asr", "Pray, short walk"], ["4:39 PM", "Maghrib", "Family time"], ["After Isha", "Gym", "45 min"]],
+  "deadlines": [["Today", "Client proposal"], ["Wed 18", "Phone bill"], ["Fri 20", "Car inspection"]],
+  "payments": { "rows": [["Wed 18", "Phone bill", "$45"], ["Sat 21", "Gym membership", "$30"]], "total": "Next 10 days: $75", "checks": ["Did the refund for the shoes come in?"] },
+  "waiting": [["Landlord", "Reply about the heater"], ["Ahmed", "The photos from Saturday"]],
+  "packages": [["Headphones", "Out for delivery today"]],
+  "inbox": [{ "from": "Team lead", "what": "Moved Tuesday's meeting to 3 PM", "action": "Accept the new time" }],
+  "texts": [{ "who": "Mom", "what": "Asked if you're coming Sunday", "reply": "Yes, after Dhuhr, in sha Allah." }],
+  "business": [{ "name": "Day job", "next": "Proposal out today" }, { "name": "Side project", "next": "Post one update" }],
+  "wire": [{ "desk": "Tech", "items": ["A new phone update came out with better battery saving."], "try": "Turn on battery saver at 30%." }],
+  "try_new": "Write down three things you are grateful for before you sleep. Two minutes, every night this week.",
+  "ayah": { "ar": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا", "en": "So surely with hardship comes ease.", "ref": "Quran 94:5" },
+  "hadith": { "en": "The most beloved deeds to Allah are those done regularly, even if small.", "ref": "Bukhari & Muslim" },
+  "workout": { "title": "Week 1 · Day 1", "when": "Full Body A · after Isha · ~45 min", "moves": [["Leg press", "2 × 12"], ["Chest press machine", "2 × 12"], ["Seated cable row", "2 × 12"], ["Plank", "2 × 30 s"]] },
+  "tonight": ["What were your top 3 today, and did they get done?", "Anything new for tomorrow's to-do?", "Any bills or money to remember?", "Who are you waiting on?", "How did the gym go?", "What do you want to learn this week?"]
+}

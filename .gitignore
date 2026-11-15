@@ -1,0 +1,11 @@
+# Private: never commit
+me/
+**/me/
+*.pdf
+.env*
+# Installed / generated
+node_modules/
+**/node_modules/
+.claude/
+.DS_Store
+Thumbs.db

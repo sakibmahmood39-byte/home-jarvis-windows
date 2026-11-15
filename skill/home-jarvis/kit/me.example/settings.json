@@ -1,0 +1,29 @@
+{
+  "name": "Your Name",
+  "call_me": "Boss",
+  "paper_name": "The Morning Times",
+  "place_label": "Your Town",
+  "lat": 40.7128,
+  "lon": -74.006,
+  "timezone": "America/New_York",
+  "units": "C",
+  "faith": "islam",
+  "prayer_method": 2,
+  "asr_school": 0,
+  "port": 3777,
+  "unlock_minutes": 10,
+  "voice": {
+    "lang": "en-US",
+    "wake_word": "jarvis",
+    "tts_voice": "Microsoft Andrew Online (Natural)",
+    "rate": 1.0,
+    "always_listening": false
+  },
+  "printer": "",
+  "duplex": true,
+  "print_paper": true,
+  "build_time": "05:45",
+  "owner_tools": ["Read", "Grep", "Glob", "WebSearch", "WebFetch"],
+  "paper_tools": ["Read", "Grep", "Glob", "WebSearch", "WebFetch"],
+  "private_words": []
+}
